@@ -26,8 +26,17 @@
 #ifndef INDUSTRIAL_MOVEIT_STOMP_MOVEIT_INCLUDE_STOMP_MOVEIT_COST_FUNCTIONS_OBSTACLE_AVOIDANCE_H_
 #define INDUSTRIAL_MOVEIT_STOMP_MOVEIT_INCLUDE_STOMP_MOVEIT_COST_FUNCTIONS_OBSTACLE_AVOIDANCE_H_
 
+#include <ros/ros.h>
 #include <moveit/robot_model/robot_model.h>
 #include "stomp_moveit/cost_functions/stomp_cost_function.h"
+
+/**
+
+  Cost function that keeps new trajectories away from a set of other trajectories.
+
+  Add a function to the stomp planner so that we can add hooks into it.
+
+  **/
 
 namespace stomp_moveit
 {
@@ -103,7 +112,11 @@ protected:
   // The link to use for distance measurement
   std::string tip_link_id_;
 
-  std::vector<std::vector<Eigen::Affine3d> > accepted_trajectories_;
+  static std::vector<std::vector<Eigen::Affine3d> > accepted_trajectories_;
+
+  // ROS structures for getting trajectories
+  ros::NodeHandle nh_;
+  ros::Subscriber traj_sub_;
 
   double compute_cost(double distance) {
     return std::min(1.0 / distance, 1000.0);

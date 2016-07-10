@@ -39,12 +39,14 @@ namespace cost_functions
 
 TrajectoryAvoidance::TrajectoryAvoidance():
     name_("TrajectoryAvoidancePlugin"),
+    nh_(),
     robot_state_(),
     collision_clearance_(0.0),
     collision_penalty_(0.0)
 {
   // TODO Auto-generated constructor stub
 
+  // TODO Create trajectory subscriber
 }
 
 TrajectoryAvoidance::~TrajectoryAvoidance()
