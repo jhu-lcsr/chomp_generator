@@ -1,0 +1,7 @@
+<library path="libchomp_generator_cost_functions">
+  <class name="stomp_moveit/TrajectoryAvoidance" type="stomp_moveit::cost_functions::TrajectoryAvoidance" base_class_type="stomp_moveit::cost_functions::StompCostFunction">
+    <description>
+      Trajectory avoidance.
+    </description>
+  </class>
+</library>

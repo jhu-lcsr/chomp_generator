@@ -12,5 +12,11 @@
 
   <depend>chomp_motion_planner</depend>
   <depend>cmake_modules</depend>
+  <depend>stomp_moveit</depend>
+  <depend>stomp_core</depend>
+  <depend>moveit_ros_move_group</depend>
 
+  <export>
+    <stomp_moveit plugin="${prefix}/cost_function_plugins.xml"/>
+  </export>
 </package>

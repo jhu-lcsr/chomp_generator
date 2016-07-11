@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(chomp_generator)
 
-find_package(catkin REQUIRED COMPONENTS roscpp chomp_motion_planner cmake_modules stomp_moveit)
+find_package(catkin REQUIRED COMPONENTS roscpp chomp_motion_planner cmake_modules stomp_moveit moveit_ros_move_group)
 find_package(Boost REQUIRED thread iostreams)
 find_package(Eigen REQUIRED)
 
@@ -32,18 +32,16 @@ catkin_package(
 include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
-## Declare a C++ library
-add_library(chomp_generator
-  src/chomp_generator.cpp
-)
-
-add_library(${PROJECT_NAME}_cost_functions
-  src/trajectory_avoidance.cpp)
+add_library(${PROJECT_NAME}_cost_functions src/trajectory_avoidance.cpp)
 target_link_libraries(${PROJECT_NAME}_cost_functions ${catkin_LIBRARIES})
 
-target_link_libraries(chomp_generator
-  ${catkin_LIBRARIES}
+add_library(chomp_generator
+  src/chomp_generator.cpp
+  src/stomp_generator.cpp
+  src/move_group.cpp
 )
+
+target_link_libraries(chomp_generator ${catkin_LIBRARIES} ${PROJECT_NAME}_cost_functions)
 
 ## Declare a C++ executable
 add_executable(genpaths src/genpaths.cpp)

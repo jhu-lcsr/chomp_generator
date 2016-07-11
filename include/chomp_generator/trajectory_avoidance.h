@@ -92,6 +92,8 @@ public:
 
   virtual void done(bool success,int total_iterations,double final_cost) override;
 
+  static void add_trajectory(std::vector<Eigen::Affine3d> &trajectory);
+
 protected:
 
   std::string name_;
@@ -112,7 +114,8 @@ protected:
   // The link to use for distance measurement
   std::string tip_link_id_;
 
-  static std::vector<std::vector<Eigen::Affine3d> > accepted_trajectories_;
+  // TODO: define this symbol
+  static std::vector<std::vector<Eigen::Affine3d> > accepted_trajectories;
 
   // ROS structures for getting trajectories
   ros::NodeHandle nh_;

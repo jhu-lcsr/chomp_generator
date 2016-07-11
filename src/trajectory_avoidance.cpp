@@ -37,6 +37,8 @@ namespace stomp_moveit
 namespace cost_functions
 {
 
+std::vector<std::vector<Eigen::Affine3d> > TrajectoryAvoidance::accepted_trajectories;
+
 TrajectoryAvoidance::TrajectoryAvoidance():
     name_("TrajectoryAvoidancePlugin"),
     nh_(),
@@ -96,6 +98,8 @@ bool TrajectoryAvoidance::computeCosts(const Eigen::MatrixXd& parameters,
 {
   using namespace moveit::core;
 
+  ROS_INFO_STREAM("Trajectories: "<<accepted_trajectories.size());
+
   if(!robot_state_)
   {
     ROS_ERROR("%s Robot State has not been updated",getName().c_str());
@@ -118,6 +122,11 @@ bool TrajectoryAvoidance::computeCosts(const Eigen::MatrixXd& parameters,
   // Compute the cost for each point in the new trajectory
   for (auto t=start_timestep; t<start_timestep + num_timesteps; ++t)
   {
+    // Initialize costs for this step
+    costs(t) = 0.0;
+
+    continue;
+
     // Get the joint position from this timestep
     Eigen::VectorXd joint_position = parameters.col(t);
 
@@ -129,7 +138,7 @@ bool TrajectoryAvoidance::computeCosts(const Eigen::MatrixXd& parameters,
     const Eigen::Affine3d &pose = robot_state_->getFrameTransform(tip_link_id_);
 
     // For each existing trajectory
-    for(auto &trajectory : accepted_trajectories_) {
+    for(auto &trajectory : accepted_trajectories) {
 
       // Find the closest point in the existing trajectory
       float min_distance = 0.2; //[m] //MAX_DISTANCE;
@@ -144,7 +153,7 @@ bool TrajectoryAvoidance::computeCosts(const Eigen::MatrixXd& parameters,
       }
 
       // Add the cost for this trajectory to this point
-      costs(t) += compute_cost(min_distance);
+      costs(t) += 0.0*compute_cost(min_distance);
     }
   }
 
@@ -187,6 +196,11 @@ bool TrajectoryAvoidance::configure(const XmlRpc::XmlRpcValue& config)
 void TrajectoryAvoidance::done(bool success,int total_iterations,double final_cost)
 {
   robot_state_.reset();
+}
+
+void TrajectoryAvoidance::add_trajectory(std::vector<Eigen::Affine3d> &trajectory)
+{
+  accepted_trajectories.push_back(trajectory);
 }
 
 } /* namespace cost_functions */
