@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 
   auto sg = std::make_shared<StompGenerator>();
 
-  //sg->generate_paths(1);
+  sg->generate_paths(10);
 
   ros::spin();
 

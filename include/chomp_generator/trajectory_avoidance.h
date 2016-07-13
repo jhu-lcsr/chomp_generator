@@ -92,6 +92,7 @@ public:
 
   virtual void done(bool success,int total_iterations,double final_cost) override;
 
+  static void clear_trajectories();
   static void add_trajectory(std::vector<Eigen::Affine3d> &trajectory);
 
 protected:
@@ -120,10 +121,6 @@ protected:
   // ROS structures for getting trajectories
   ros::NodeHandle nh_;
   ros::Subscriber traj_sub_;
-
-  double compute_cost(double distance) {
-    return std::min(1.0 / distance, 1000.0);
-  }
 };
 
 } /* namespace cost_functions */

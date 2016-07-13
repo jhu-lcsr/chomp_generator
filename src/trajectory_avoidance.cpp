@@ -61,8 +61,7 @@ bool TrajectoryAvoidance::initialize(moveit::core::RobotModelConstPtr robot_mode
 {
   robot_model_ptr_ = robot_model_ptr;
   group_name_ = group_name;
-  // TODO set this to something useful
-  tip_link_id_ = "";
+  tip_link_id_ = "right/hand";
   return configure(config);
 }
 
@@ -98,7 +97,7 @@ bool TrajectoryAvoidance::computeCosts(const Eigen::MatrixXd& parameters,
 {
   using namespace moveit::core;
 
-  ROS_INFO_STREAM("Trajectories: "<<accepted_trajectories.size());
+  //ROS_INFO_STREAM("Trajectories: "<<accepted_trajectories.size());
 
   if(!robot_state_)
   {
@@ -125,7 +124,9 @@ bool TrajectoryAvoidance::computeCosts(const Eigen::MatrixXd& parameters,
     // Initialize costs for this step
     costs(t) = 0.0;
 
-    continue;
+    if(accepted_trajectories.size() == 0) {
+      continue;
+    }
 
     // Get the joint position from this timestep
     Eigen::VectorXd joint_position = parameters.col(t);
@@ -138,22 +139,28 @@ bool TrajectoryAvoidance::computeCosts(const Eigen::MatrixXd& parameters,
     const Eigen::Affine3d &pose = robot_state_->getFrameTransform(tip_link_id_);
 
     // For each existing trajectory
+    int traj_index = 0;
     for(auto &trajectory : accepted_trajectories) {
 
       // Find the closest point in the existing trajectory
-      float min_distance = 0.2; //[m] //MAX_DISTANCE;
-      size_t min_point_index = 0;
+      float min_distance = 1.0; //[m] //MAX_DISTANCE;
 
+      int p=0;
       for(auto &point : trajectory) {
-
-        float distance = (point.translation() - pose.translation()).norm();
-        if(distance < min_distance) {
-          min_distance = distance;
+        if(p > 0.1*trajectory.size() && p < 0.9*trajectory.size()) {
+          float distance = (point.translation() - pose.translation()).norm();
+          if(distance < min_distance) {
+            min_distance = distance;
+          }
         }
+        p++;
       }
 
       // Add the cost for this trajectory to this point
-      costs(t) += 0.0*compute_cost(min_distance);
+      float cost = 1.0 / std::max(min_distance*min_distance, 0.0001f);
+      std::cerr<<"Traj "<<traj_index<<" point ("<<t<<") cost: "<<cost<<std::endl;
+      costs(t) += cost;
+      traj_index++;
     }
   }
 
@@ -196,6 +203,11 @@ bool TrajectoryAvoidance::configure(const XmlRpc::XmlRpcValue& config)
 void TrajectoryAvoidance::done(bool success,int total_iterations,double final_cost)
 {
   robot_state_.reset();
+}
+
+void TrajectoryAvoidance::clear_trajectories()
+{
+  accepted_trajectories.clear();
 }
 
 void TrajectoryAvoidance::add_trajectory(std::vector<Eigen::Affine3d> &trajectory)

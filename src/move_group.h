@@ -19,6 +19,10 @@ namespace move_group
 
       void status();
 
+      MoveGroupContextPtr getContext() {
+        return context_;
+      }
+
     private:
       void configureCapabilities();
 

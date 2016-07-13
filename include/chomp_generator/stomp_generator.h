@@ -44,6 +44,8 @@ namespace chomp_generator {
       planning_scene_monitor::PlanningSceneMonitorPtr monitor_;
       std::shared_ptr<move_group::MoveGroupExe> move_group_;
 
+      // Introspection
+      ros::Publisher marker_pub_;
   };
 }
 
